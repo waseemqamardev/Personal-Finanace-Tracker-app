@@ -23,7 +23,6 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = ResponsiveUtils.isMobile(context);
 
     return SizedBox(
       width: fullWidth ? double.infinity : null,

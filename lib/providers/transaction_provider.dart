@@ -49,7 +49,6 @@ class TransactionProvider extends ChangeNotifier {
   double totalExpense() =>
       _transactions.where((t) => t.type == 'expense').fold(0.0, (p, e) => p + e.amount);
 
-  /// ✅ Add this getter to fix your error
   double get balance => totalIncome() - totalExpense();
 
   Future<void> _uploadToSupabase(TransactionModel tx) async {
@@ -71,7 +70,7 @@ class TransactionProvider extends ChangeNotifier {
           .execute();
 
       if (existing.data != null && (existing.data as List).isNotEmpty) {
-        debugPrint('ℹ️ Transaction already exists in Supabase: ${tx.title}');
+        debugPrint('Transaction already exists in Supabase: ${tx.title}');
         return;
       }
 
@@ -83,17 +82,17 @@ class TransactionProvider extends ChangeNotifier {
         'user_email': user.email,
       });
 
-      debugPrint('✅ Supabase Upload Success: ${tx.title}');
+      debugPrint('Supabase Upload Success: ${tx.title}');
     } catch (e) {
-      debugPrint('❌ Supabase sync failed for ${tx.title}: $e');
+      debugPrint(' Supabase sync failed for ${tx.title}: $e');
     }
   }
 
   Future<void> syncAllExpensesToSupabase() async {
-    debugPrint('🔄 Starting bulk sync to Supabase...');
+    debugPrint(' Starting bulk sync to Supabase...');
     for (var tx in _transactions.where((t) => t.type == 'expense')) {
       await _uploadToSupabase(tx);
     }
-    debugPrint('✅ All expense transactions synced!');
+    debugPrint('All expense transactions synced!');
   }
 }

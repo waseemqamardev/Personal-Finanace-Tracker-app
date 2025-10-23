@@ -14,18 +14,14 @@ class NotificationService {
 
   bool _initialized = false;
 
-  /// Initialize notifications & timezone
   Future<void> init() async {
     if (_initialized) return;
 
-    // Initialize timezone database
     tzdata.initializeTimeZones();
 
-    // Set local timezone
     final String timeZoneName = tz.local.name;
     tz.setLocalLocation(tz.getLocation(timeZoneName));
 
-    // Initialize Flutter Local Notifications
     const AndroidInitializationSettings androidInit =
     AndroidInitializationSettings('@mipmap/ic_launcher');
     const InitializationSettings initSettings =
@@ -36,7 +32,6 @@ class NotificationService {
     _initialized = true;
   }
 
-  /// Show immediate notification
   Future<void> showNotification(String title, String body) async {
     if (!_initialized) await init();
 
@@ -54,7 +49,6 @@ class NotificationService {
     await flutterLocalNotificationsPlugin.show(0, title, body, platformDetails);
   }
 
-  /// Schedule daily notification (approximate for Android 13+)
   Future<void> scheduleDaily(
       int id, String title, String body, int hour, int minute) async {
     if (!_initialized) await init();
@@ -87,18 +81,15 @@ class NotificationService {
     } on Exception catch (e) {
       debugPrint('⚠️ Could not schedule daily notification: $e');
 
-      // Fallback: show immediate notification
       await showNotification(title, body);
     }
   }
 
-  /// Cancel a scheduled notification
   Future<void> cancel(int id) async {
     if (!_initialized) await init();
     await flutterLocalNotificationsPlugin.cancel(id);
   }
 
-  /// Cancel all notifications
   Future<void> cancelAll() async {
     if (!_initialized) await init();
     await flutterLocalNotificationsPlugin.cancelAll();

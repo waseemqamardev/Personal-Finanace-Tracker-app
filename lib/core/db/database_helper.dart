@@ -51,7 +51,6 @@ class DatabaseHelper {
     debugPrint('✅ User tokens cleared');
   }
 
-  // Keep this method but don't use it in logout
   Future<void> clearDatabase() async {
     final db = await database;
     await db.delete('users');

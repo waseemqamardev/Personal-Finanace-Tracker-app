@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:peronaltracker/core/utils/app_routes.dart';
 import '../../core/models/transaction_model.dart';
 import '../../core/utils/responsive_utils.dart';
-import '../screens/transaction/add_edit_transaction.dart';
 
 class TransactionTile extends StatelessWidget {
   final TransactionModel tx;

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:peronaltracker/core/utils/app_routes.dart';
 import 'package:provider/provider.dart';
-import '../../../providers/auth_providers.dart';
 import '../../../providers/transaction_provider.dart';
 import '../../../core/utils/responsive_utils.dart';
 import '../../../widgets/pie_chart_widget.dart';

@@ -164,7 +164,7 @@ class _AddEditTransactionScreenState extends State<AddEditTransactionScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Transaction Type',
                         style: TextStyle(
                           fontSize: 16,
@@ -210,7 +210,7 @@ class _AddEditTransactionScreenState extends State<AddEditTransactionScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Category',
                         style: TextStyle(
                           fontSize: 16,
@@ -242,7 +242,7 @@ class _AddEditTransactionScreenState extends State<AddEditTransactionScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Date',
                         style: TextStyle(
                           fontSize: 16,
