@@ -10,14 +10,18 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/constants/supabase_key.dart';
-
+import 'core/utils/app_routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Supabase
   await Supabase.initialize(
     url: SupabaseKeys.supabaseUrl,
     anonKey: SupabaseKeys.supabaseAnonKey,
   );
+
+  // Initialize notifications
   await NotificationService().init();
 
   runApp(const MyApp());
@@ -25,6 +29,7 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -37,11 +42,28 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Personal Finance Tracker',
         theme: AppTheme.lightTheme,
-        home: Consumer<AuthProvider>(
-          builder: (context, auth, _) =>
-          auth.isLoggedIn ? const HomeScreen() : const LoginScreen(),
-        ),
+        initialRoute: '/',
+        onGenerateRoute: AppRoutes.generateRoute,
+        home: const AuthWrapper(),
       ),
+    );
+  }
+}
+
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<AuthProvider>(
+      builder: (context, auth, child) {
+        // Show loading indicator while checking auth state
+        if (auth.user == null && !auth.isLoggedIn) {
+          return const LoginScreen();
+        }
+
+        return const HomeScreen();
+      },
     );
   }
 }

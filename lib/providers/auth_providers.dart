@@ -98,9 +98,7 @@ class AuthProvider extends ChangeNotifier {
         debugPrint('⚠️ Supabase register failed: $e');
       }
 
-      // Save Supabase session (if exists)
       await _saveSupabaseSession();
-
       notifyListeners();
       return token;
     } catch (e) {
@@ -132,8 +130,6 @@ class AuthProvider extends ChangeNotifier {
         if (resSupa.user != null) {
           debugPrint('✅ Supabase login successful: ${resSupa.user!.email}');
           await _saveSupabaseSession();
-        } else {
-          debugPrint('⚠️ Supabase login failed, user not found.');
         }
       } catch (e) {
         debugPrint('❌ Supabase login error: $e');
@@ -147,18 +143,27 @@ class AuthProvider extends ChangeNotifier {
     return false;
   }
 
-  /// 🔹 LOGOUT
+  /// 🔹 LOGOUT - Clear everything properly
+  /// 🔹 LOGOUT - Clear tokens but keep user data
   Future<void> logout() async {
-    _user = null;
     try {
+      // Clear Supabase session
       await _supabase.auth.signOut();
       await _storage.delete(key: 'supabase_session');
-    } catch (e) {
-      debugPrint('⚠️ Supabase sign-out failed: $e');
-    }
-    notifyListeners();
-  }
 
+      // Clear tokens from SQLite
+      await DatabaseHelper.instance.clearUserTokens();
+
+      // Clear the current user instance
+      _user = null;
+
+      debugPrint('✅ Logout successful - tokens cleared, user data preserved');
+    } catch (e) {
+      debugPrint('⚠️ Logout error: $e');
+    } finally {
+      notifyListeners();
+    }
+  }
   /// 🔹 UPDATE PROFILE (Local + Supabase)
   Future<bool> updateProfile({
     required String name,
@@ -193,21 +198,6 @@ class AuthProvider extends ChangeNotifier {
     return true;
   }
 
-  /// 🔹 Supabase Sign In
-  Future<void> _signInToSupabase(String email, String password) async {
-    try {
-      final res = await _supabase.auth.signInWithPassword(
-        email: email,
-        password: password,
-      );
-      if (res.user != null) {
-        debugPrint('✅ Supabase sign-in successful: ${res.user!.email}');
-      }
-    } catch (e) {
-      debugPrint('❌ Supabase sign-in error: $e');
-    }
-  }
-
   /// 🔹 Save Supabase session securely
   Future<void> _saveSupabaseSession() async {
     try {
@@ -237,11 +227,7 @@ class AuthProvider extends ChangeNotifier {
         final res = await _supabase.auth.recoverSession(savedSession);
         if (res.session != null) {
           debugPrint('✅ Session restored for ${res.session!.user.email}');
-        } else {
-          debugPrint('⚠️ Failed to restore session');
         }
-      } else {
-        debugPrint('ℹ️ No stored Supabase session found.');
       }
     } catch (e) {
       debugPrint('❌ Session restore failed: $e');

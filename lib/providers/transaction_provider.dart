@@ -45,32 +45,12 @@ class TransactionProvider extends ChangeNotifier {
 
   double totalIncome() =>
       _transactions.where((t) => t.type == 'income').fold(0.0, (p, e) => p + e.amount);
+
   double totalExpense() =>
       _transactions.where((t) => t.type == 'expense').fold(0.0, (p, e) => p + e.amount);
 
-  /// 🔹 Upload single transaction to Supabase
-  // Future<void> _uploadToSupabase(TransactionModel tx) async {
-  //   try {
-  //     final user = _supabase.auth.currentUser;
-  //
-  //     if (user == null) {
-  //       debugPrint('⚠️ No Supabase user found. Skipping sync for ${tx.title}');
-  //       return;
-  //     }
-  //
-  //     await _supabase.from('expenses').upsert({
-  //       'title': tx.title,
-  //       'amount': tx.amount,
-  //       'category': tx.category,
-  //       'date': tx.date,
-  //       'user_email': user.email,
-  //     });
-  //
-  //     debugPrint('✅ Supabase Upload Success: ${tx.title}');
-  //   } catch (e) {
-  //     debugPrint('❌ Supabase sync failed for ${tx.title}: $e');
-  //   }
-  // }
+  /// ✅ Add this getter to fix your error
+  double get balance => totalIncome() - totalExpense();
 
   Future<void> _uploadToSupabase(TransactionModel tx) async {
     try {
@@ -81,7 +61,6 @@ class TransactionProvider extends ChangeNotifier {
         return;
       }
 
-      // Check if transaction already exists in Supabase
       final existing = await _supabase
           .from('expenses')
           .select()
@@ -93,10 +72,9 @@ class TransactionProvider extends ChangeNotifier {
 
       if (existing.data != null && (existing.data as List).isNotEmpty) {
         debugPrint('ℹ️ Transaction already exists in Supabase: ${tx.title}');
-        return; // Skip syncing
+        return;
       }
 
-      // If not exists, upload
       await _supabase.from('expenses').insert({
         'title': tx.title,
         'amount': tx.amount,
@@ -111,8 +89,6 @@ class TransactionProvider extends ChangeNotifier {
     }
   }
 
-
-  /// 🔹 Bulk Sync
   Future<void> syncAllExpensesToSupabase() async {
     debugPrint('🔄 Starting bulk sync to Supabase...');
     for (var tx in _transactions.where((t) => t.type == 'expense')) {

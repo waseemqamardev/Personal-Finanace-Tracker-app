@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -41,5 +42,20 @@ class DatabaseHelper {
         userId INTEGER
       );
     ''');
+  }
+
+
+  Future<void> clearUserTokens() async {
+    final db = await database;
+    await db.update('users', {'token': null});
+    debugPrint('✅ User tokens cleared');
+  }
+
+  // Keep this method but don't use it in logout
+  Future<void> clearDatabase() async {
+    final db = await database;
+    await db.delete('users');
+    await db.delete('transactions');
+    debugPrint('✅ Database completely cleared');
   }
 }
